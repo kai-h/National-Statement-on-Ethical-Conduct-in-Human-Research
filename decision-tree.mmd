@@ -1,0 +1,39 @@
+```mermaid
+flowchart TD
+    A["Was the investigation requested by or on behalf of a primary treating clinician?<br/>(see Note 1)"]
+
+    A -- Yes --> B["Was the investigation a validated test performed in a NATA-accredited lab or overseas equivalent?"]
+    A -- No --> C["Was the investigation performed as part of an approved research project?"]
+    
+    B -- No --> C
+    B -- Yes --> D["Are the results pertinent to the indication for testing?"]
+    
+    D -- Yes --> E["Follow standard clinical practice"]
+    D -- No<br/>See Note 2 --> F["Did the patient consent to the return of findings, including secondary and/or incidental findings?"]
+    
+    F -- Yes --> G["Follow policy and/or patient preferences"]
+    F -- No --> H["Consult current best practice or national clinical genomics guidelines"]
+    
+    C -- No<br/>See Note 3 --> I["Do not return findings"]
+    C -- Yes --> J["Does the protocol permit the return of any findings from the research?"]
+    
+    J -- No --> K["Do not return findings"]
+    J -- Yes --> L["Does the protocol include criteria and a process for the return of findings, including secondary and/or incidental findings?<br/>(See Note 4)"]
+    
+    L -- No --> M["Consult HREC re: establishment of a process for review of findings, consultation with clinicians and criteria for contact with research participants"]
+    L -- Yes --> N["Are the findings pertinent findings?"]
+    
+    N -- No<br/>See Note 5 --> O["Do not return findings<br/>(unless national/international standard or protocol is for mandatory return of some or all incidental findings)"]
+    N -- Yes --> P["Did the participant consent to the return of pertinent findings?"]
+    
+    P -- No --> Q["Do not return findings<br/>(unless protocol mandates return of pertinent findings)"]
+    P -- Yes<br/>See Note 6 --> R["Follow process as described in protocol"]
+    
+    classDef question fill:#05004d,color:#ffffff,stroke:#05004d,stroke-width:1px;
+    classDef action fill:#7fd0cc,color:#000000,stroke:#7fd0cc,stroke-width:1px;
+    classDef clinical fill:#d9d9d9,color:#000000,stroke:#d9d9d9,stroke-width:1px;
+    
+    class A,C,J,L,N,P,R question;
+    class I,K,M,O,Q action;
+    class B,D,E,F,G,H clinical;
+```
