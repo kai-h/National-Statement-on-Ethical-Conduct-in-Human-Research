@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>National Statement on Ethical Conduct in Human Research 2025</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #ffffff; --bg2: #f5f5f5; --bg3: #ebebeb;
+    --text: #111111; --text2: #555555; --text3: #888888;
+    --border: rgba(0,0,0,0.12); --border2: rgba(0,0,0,0.22);
+    --accent: #2563eb; --accent-bg: #eff6ff; --accent-text: #1d4ed8;
+    --radius: 8px; --radius-lg: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1a1a1a; --bg2: #252525; --bg3: #2f2f2f;
+      --text: #f0f0f0; --text2: #aaaaaa; --text3: #666666;
+      --border: rgba(255,255,255,0.1); --border2: rgba(255,255,255,0.2);
+      --accent-bg: #1e3a5f; --accent-text: #93c5fd;
+    }
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.6; font-size: 15px; }
+  #app { max-width: 820px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+  h1 { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+  .subtitle { font-size: 13px; color: var(--text3); margin-bottom: 1.75rem; }
+
+  /* search */
+  .search-row { display: flex; gap: 8px; margin-bottom: 1.5rem; }
+  textarea {
+    flex: 1; padding: 10px 12px; font-size: 14px; font-family: inherit;
+    border-radius: var(--radius); border: 1px solid var(--border2);
+    background: var(--bg); color: var(--text); resize: none; line-height: 1.5;
+  }
+  textarea:focus { outline: none; border-color: var(--accent); }
+  button.ask {
+    padding: 0 22px; border-radius: var(--radius); font-size: 14px; font-weight: 500;
+    background: var(--text); color: var(--bg); border: none; cursor: pointer;
+    align-self: stretch; min-width: 72px;
+  }
+  button.ask:disabled { background: var(--bg3); color: var(--text3); cursor: default; }
+
+  /* api key */
+  .key-row { display: flex; gap: 8px; margin-bottom: 1.25rem; align-items: center; }
+  .key-row label { font-size: 13px; color: var(--text2); white-space: nowrap; }
+  .key-row input {
+    flex: 1; padding: 8px 10px; font-size: 13px; font-family: monospace;
+    border-radius: var(--radius); border: 1px solid var(--border2);
+    background: var(--bg); color: var(--text);
+  }
+  .key-row input:focus { outline: none; border-color: var(--accent); }
+  .key-note { font-size: 12px; color: var(--text3); margin-bottom: 1.25rem; }
+
+  /* answer */
+  .answer-box {
+    padding: 16px 18px; border-radius: var(--radius-lg);
+    background: var(--bg2); border: 1px solid var(--border);
+    line-height: 1.75; font-size: 14px; margin-bottom: 1.25rem;
+  }
+  .answer-box p + p { margin-top: 0.75rem; }
+
+  /* cite badge */
+  .cite {
+    display: inline-block; margin: 0 2px; padding: 1px 6px;
+    font-size: 11px; font-weight: 500; border-radius: 4px;
+    background: var(--accent-bg); color: var(--accent-text);
+    border: 1px solid var(--border); cursor: pointer;
+    vertical-align: middle; text-decoration: none;
+  }
+  .cite:hover { border-color: var(--accent); }
+
+  /* decision tree */
+  .tree-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 8px;
+  }
+  .tree-header span { font-size: 13px; font-weight: 500; color: var(--text2); }
+  .tree-header button {
+    font-size: 12px; color: var(--text3); background: none;
+    border: none; cursor: pointer;
+  }
+  .tree-wrap {
+    border: 1px solid var(--border); border-radius: var(--radius-lg);
+    overflow: auto; background: var(--bg); padding: 1rem;
+    margin-bottom: 1.25rem; max-height: 600px;
+  }
+  .tree-wrap svg { max-width: 100%; height: auto; }
+
+  /* citations */
+  .cite-heading { font-size: 13px; font-weight: 500; color: var(--text2); margin-bottom: 8px; }
+  details { margin-bottom: 8px; }
+  summary {
+    cursor: pointer; font-size: 13px; font-weight: 500;
+    padding: 8px 12px; border-radius: var(--radius);
+    border: 1px solid var(--border); background: var(--bg2);
+    color: var(--text); list-style: none; user-select: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary.active { background: var(--accent-bg); color: var(--accent-text); border-color: var(--accent); }
+  .cite-body {
+    font-size: 13px; line-height: 1.75; padding: 10px 14px;
+    border-left: 2px solid var(--border2); margin-left: 4px;
+    color: var(--text2); white-space: pre-wrap;
+    max-height: 380px; overflow-y: auto;
+  }
+
+  /* empty state */
+  .examples { font-size: 13px; color: var(--text3); line-height: 2; }
+  .examples strong { color: var(--text2); font-weight: 500; }
+
+  /* loading / status */
+  .status { font-size: 14px; color: var(--text2); padding: 2rem 0; text-align: center; }
+  .error { color: #dc2626; }
+
+  /* spinner */
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spinner {
+    display: inline-block; width: 14px; height: 14px; margin-right: 8px;
+    border: 2px solid var(--border2); border-top-color: var(--accent);
+    border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <h1>National Statement on Ethical Conduct in Human Research 2025</h1>
+  <div class="subtitle" id="subtitle">Loading document…</div>
+
+  <div class="key-row">
+    <label for="apikey">Anthropic API key</label>
+    <input type="password" id="apikey" placeholder="sk-ant-…" autocomplete="off">
+  </div>
+  <p class="key-note">Your key is used only for Claude API calls from this page and is never stored or transmitted elsewhere.</p>
+
+  <div class="search-row">
+    <textarea id="query" rows="2" placeholder="e.g. What are the requirements for informed consent?"></textarea>
+    <button class="ask" id="askBtn" disabled>Ask</button>
+  </div>
+
+  <div id="output"></div>
+</div>
+
+<script>
+// ── config ──────────────────────────────────────────────────────────────────
+const MD_URL  = "National-Statement-on-Ethical-Conduct-Human-Research-2025.md";
+const SVG_URL = "decision-tree.svg";
+
+// ── state ───────────────────────────────────────────────────────────────────
+let chunks = [];
+let svgText = "";
+let thinking = false;
+
+// ── chunk markdown by headings ───────────────────────────────────────────────
+function chunkMarkdown(md) {
+  const lines = md.split("\n");
+  const result = [];
+  let cur = null;
+  for (const line of lines) {
+    const m = line.match(/^(#{1,4})\s+(.+)/);
+    if (m) {
+      if (cur) result.push(cur);
+      cur = { level: m[1].length, heading: m[2].trim(), lines: [line] };
+    } else if (cur) {
+      cur.lines.push(line);
+    } else {
+      cur = { level: 0, heading: "Preamble", lines: [line] };
+    }
+  }
+  if (cur) result.push(cur);
+  return result.map(c => ({ ...c, text: c.lines.join("\n").trim() }));
+}
+
+// ── BM25-ish retrieval ───────────────────────────────────────────────────────
+function tok(str) {
+  return str.toLowerCase().replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(Boolean);
+}
+function score(chunk, qt) {
+  const ct = tok(chunk.text + " " + chunk.heading);
+  const freq = {};
+  ct.forEach(t => { freq[t] = (freq[t]||0) + 1; });
+  let s = 0;
+  const k=1.5, b=0.75, avg=300, dl=ct.length;
+  for (const t of qt) {
+    const tf = freq[t]||0;
+    if (tf) s += (tf*(k+1))/(tf+k*(1-b+b*dl/avg));
+  }
+  return s;
+}
+function retrieve(query, n=14) {
+  const qt = tok(query);
+  return chunks
+    .map(c => ({ ...c, s: score(c, qt) }))
+    .filter(c => c.s > 0)
+    .sort((a,b) => b.s - a.s)
+    .slice(0, n);
+}
+
+// ── decision tree detection ──────────────────────────────────────────────────
+const DT_KW = ["review","ethics","hrec","low risk","negligible risk","exempt","approval",
+  "committee","research proposal","ethical review","level of review","requires review",
+  "merit","safety","participant","human research","institutional"];
+function isDtQuery(q) {
+  return tok(q).filter(t => DT_KW.includes(t)).length >= 2;
+}
+
+// ── SVG highlight ────────────────────────────────────────────────────────────
+function highlightSvg(svg, keywords) {
+  if (!keywords.length) return svg;
+  let out = svg;
+  // find <text> nodes containing keywords, then highlight their parent <g>
+  keywords.forEach(kw => {
+    const re = new RegExp(`(<text[^>]*>[^<]*)(${kw})([^<]*<\/text>)`, "gi");
+    out = out.replace(re, (m, pre, word, post) => {
+      return pre.replace("<text", '<text fill="#92400e"') + `<tspan style="font-weight:600">${word}</tspan>` + post;
+    });
+  });
+  // also tint rect/polygon elements near matched text by adding a yellow fill
+  out = out.replace(/(<(?:rect|polygon)[^>]*)(fill="[^"]*")/g, (m, tag, fill) => {
+    // leave alone — targeted highlight only via text colour above
+    return m;
+  });
+  return out;
+}
+
+// ── render answer with [REF-N] badges ────────────────────────────────────────
+function renderAnswer(text, citations) {
+  const paras = text.split("\n").filter(p => p.trim());
+  return paras.map(p => {
+    const html = p.replace(/\[REF-(\d+):[^\]]+\]/g, (m, n) => {
+      const idx = parseInt(n) - 1;
+      const label = citations[idx] ? `REF-${n}: ${citations[idx].heading}` : m;
+      return `<a class="cite" href="#cite-${idx}" onclick="scrollToCite(${idx}); return false;">[REF-${n}]</a>`;
+    });
+    return `<p>${html}</p>`;
+  }).join("");
+}
+
+// ── scroll to citation ───────────────────────────────────────────────────────
+function scrollToCite(idx) {
+  const el = document.getElementById("cite-" + idx);
+  if (!el) return;
+  el.open = true;
+  el.querySelector("summary").classList.add("active");
+  el.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+// ── main query ───────────────────────────────────────────────────────────────
+async function doQuery() {
+  const query = document.getElementById("query").value.trim();
+  const apiKey = document.getElementById("apikey").value.trim();
+  if (!query || !apiKey || thinking) return;
+
+  thinking = true;
+  document.getElementById("askBtn").disabled = true;
+  document.getElementById("output").innerHTML = `<div class="status"><span class="spinner"></span>Searching document and synthesising answer…</div>`;
+
+  const relevant = retrieve(query);
+  const dtRelevant = isDtQuery(query);
+
+  const context = relevant.map((c,i) =>
+    `[REF-${i+1}: ${c.heading}]\n${c.text.slice(0,1400)}`
+  ).join("\n\n---\n\n");
+
+  const system = `You are a research ethics assistant helping users query the National Statement on Ethical Conduct in Human Research 2025.
+
+STRICT RULES:
+- Only use information from the provided document excerpts below.
+- Every factual claim MUST include a citation in the format [REF-N: Section Title].
+- Do not infer, extrapolate, or add any information not present in the excerpts.
+- If the excerpts do not contain enough information to answer, say so explicitly.
+- Write in plain, clear Australian English. Be concise but thorough.
+- Structure longer answers with short paragraphs separated by blank lines.
+- If the question relates to the ethical review process, decision pathways, or levels of review, note that a decision tree is available.
+
+Document excerpts:
+${context}`;
+
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true"
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        system,
+        messages: [{ role: "user", content: query }]
+      })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    const text = data.content?.find(b => b.type === "text")?.text || "No response.";
+
+    // collect cited refs
+    const usedIdxs = [...new Set([...text.matchAll(/\[REF-(\d+)/g)].map(m => parseInt(m[1])-1))];
+    const citations = usedIdxs.map(i => relevant[i]).filter(Boolean);
+    // remap to sequential for display
+    const citeMap = {};
+    usedIdxs.forEach((orig, seq) => { citeMap[orig+1] = seq; });
+
+    let html = `<div class="answer-box">${renderAnswer(text, relevant)}</div>`;
+
+    // decision tree
+    if (dtRelevant && svgText) {
+      const kws = tok(query).filter(t => t.length > 4);
+      const highlighted = highlightSvg(svgText, kws);
+      html += `<div class="tree-section">
+        <div class="tree-header">
+          <span>Decision tree — relevant to your query</span>
+          <button onclick="this.closest('.tree-section').remove()">hide</button>
+        </div>
+        <div class="tree-wrap">${highlighted}</div>
+      </div>`;
+    }
+
+    // source passages
+    if (relevant.length) {
+      html += `<div class="cite-heading">Source passages</div>`;
+      relevant.forEach((c, i) => {
+        const preview = c.text.slice(0, 2200) + (c.text.length > 2200 ? "\n\n[truncated…]" : "");
+        html += `<details id="cite-${i}">
+          <summary>REF-${i+1}: ${escHtml(c.heading)}</summary>
+          <div class="cite-body">${escHtml(preview)}</div>
+        </details>`;
+      });
+    }
+
+    document.getElementById("output").innerHTML = html;
+  } catch(e) {
+    document.getElementById("output").innerHTML = `<div class="status error">Error: ${escHtml(e.message)}</div>`;
+  }
+
+  thinking = false;
+  document.getElementById("askBtn").disabled = false;
+}
+
+function escHtml(str) {
+  return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+// ── init ─────────────────────────────────────────────────────────────────────
+async function init() {
+  const sub = document.getElementById("subtitle");
+  try {
+    sub.textContent = "Fetching document…";
+    const [mdRes, svgRes] = await Promise.all([fetch(MD_URL), fetch(SVG_URL)]);
+    if (!mdRes.ok) throw new Error(`Markdown fetch failed: ${mdRes.status}`);
+    if (!svgRes.ok) throw new Error(`SVG fetch failed: ${svgRes.status}`);
+    const md = await mdRes.text();
+    svgText = await svgRes.text();
+    sub.textContent = "Parsing document…";
+    chunks = chunkMarkdown(md);
+    sub.textContent = `${chunks.length} sections loaded · Enter your Anthropic API key and ask a question`;
+    document.getElementById("askBtn").disabled = false;
+  } catch(e) {
+    sub.innerHTML = `<span class="error">Load error: ${escHtml(e.message)}</span>`;
+  }
+}
+
+// ── events ───────────────────────────────────────────────────────────────────
+document.getElementById("askBtn").addEventListener("click", doQuery);
+document.getElementById("query").addEventListener("keydown", e => {
+  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); doQuery(); }
+});
+
+// show examples when output is empty
+document.getElementById("output").innerHTML = `<div class="examples">
+  <strong>Example queries:</strong><br>
+  What are the requirements for informed consent?<br>
+  When is low or negligible risk review required?<br>
+  What is the role of a HREC?<br>
+  How should researchers handle participant withdrawal?<br>
+  What protections apply to vulnerable populations?
+</div>`;
+
+init();
+</script>
+</body>
+</html>
